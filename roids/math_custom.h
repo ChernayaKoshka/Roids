@@ -30,5 +30,6 @@ int roundTo(int numToRound, int multiple);
 int roundUpTo(int numToRound, int multiple);
 int roundDownTo(int numToRound, int multiple);
 
-BOOL lineIntersectsRect(DoublePoint start, DoublePoint end, RECT rect);
+BOOL doLinesIntersect(DoublePoint start, DoublePoint end, DoublePoint start2, DoublePoint end2, POINT* intersection);
+BOOL doesLineIntersectRect(DoublePoint start, DoublePoint end, RECT rect, POINT* intersection);
 BOOL doRectanglesOverlap(RECT r1, RECT r2);

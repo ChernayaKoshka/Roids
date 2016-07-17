@@ -72,6 +72,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		{
 			update();
 			Screen_Render();
+			Ship_CheckCollisions();
 			timeAccumulated -= STEPS_PER_SECOND;
 		}
 

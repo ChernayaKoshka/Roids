@@ -2,6 +2,8 @@
 
 WindowDetails* details;
 
+extern POINT intersection;
+
 void Screen_HandleWindowEvents()
 {
 	MSG msg;

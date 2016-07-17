@@ -6,6 +6,7 @@
 #define DEFAULT_J 20
 #define DEFAULT_I 15
 #define SCALAR 2
+#define SHOT_SCALAR 4
 
 typedef struct tagSpaceship
 {
@@ -16,6 +17,8 @@ typedef struct tagSpaceship
 }Spaceship;
 
 extern Spaceship ship;
+
+extern POINT intersection;
 
 typedef enum tagRotationDirection
 {
@@ -34,6 +37,7 @@ BOOL Ship_Init();
 void Ship_ResetVelocity();
 BOOL Ship_Rotate(eRotationDirection direction);
 BOOL Ship_Accelerate(eMovementDirectionn direction);
+void Ship_CheckCollisions();
 void Ship_Update();
 void Ship_WriteToBuffer();
 void Ship_Fire();

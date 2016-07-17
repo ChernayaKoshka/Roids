@@ -1,4 +1,5 @@
 #include "math_custom.h"
+#include <stdio.h>
 
 int Greatest(int num, int num2)
 {
@@ -170,32 +171,103 @@ int roundDownTo(int numToRound, int multiple)
 		return numToRound - remainder;
 }
 
-//credit to http://stackoverflow.com/a/18292964/2396111
-BOOL lineIntersectsRect(DoublePoint start, DoublePoint end, RECT rect)
+// Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
+// intersect the intersection point may be stored in the DoublePoint* intersection.
+//99.99% credit to http://stackoverflow.com/a/1968345/2396111
+BOOL doLinesIntersect(DoublePoint start, DoublePoint end, DoublePoint start2, DoublePoint end2, POINT* intersection)
 {
-	double minX = Least(rect.left, rect.right);
-	double minY = Least(rect.top, rect.bottom);
+	double s1_x = end.x - start.x;
+	double s1_y = end.y - start.y;
 
-	double maxX = Greatest(rect.left, rect.right);
-	double maxY = Greatest(rect.top, rect.bottom);
+	double s2_x = end2.x - start2.x;
+	double s2_y = end2.y - start2.y;
 
-	//if ((start.x <= minX && end.x <= minX) || (start.y <= minY && end.y <= minY) || (start.x >= maxX && end.x >= maxX) || (start.y >= maxY && end.y >= maxY))
-	if ((start.x <= minX && end.x <= minX) || (start.y <= minY && end.y <= minY) || (start.x >= maxX && end.x >= maxX) || (start.y >= maxY && end.y >= maxY))
-		return FALSE;
+	double s = (-s1_y * (start.x - start2.x) + s1_x * (start.y - start2.y)) / (-s2_x * s1_y + s1_x * s2_y);
+	double t = (s2_x * (start.y - start2.y) - s2_y * (start.x - start2.x)) / (-s2_x * s1_y + s1_x * s2_y);
 
-	double m = (end.y - start.y) / (end.x - start.x);
+	if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+	{
+		// Collision detected
+		if (intersection != NULL)
+		{
+			intersection->x = start.x + (t * s1_x);
+			intersection->y = start.y + (t * s1_y);
+		}
+		return TRUE;
+	}
 
-	double y = m * (minX - start.x) + start.y; //y = mx+b
-	if (y > minY && y < maxY) return TRUE;
+	return FALSE; // No collision
+}
 
-	y = m*(maxX - start.x) + start.y;
-	if (y > minY && y < maxY) return TRUE;
+void swapPoints(DoublePoint* p1, DoublePoint* p2)
+{
+	DoublePoint temp = { p1->x, p1->y };
+	p1->x = p2->x;
+	p1->y = p2->y;
 
-	double x = (minY - start.y) / m + start.x;
-	if (x > minX && x < maxX) return TRUE;
+	p2->x = temp.x;
+	p2->y = temp.y;
+}
 
-	x = (maxY - start.y) / m + start.x;
-	if (x > minX && x < maxX) return TRUE;
+void flipRectangle(RECT* rect, BOOL vertical)
+{
+	RECT temp = { 0 };
+	temp.bottom = rect->bottom;
+	temp.left = rect->left;
+
+	if (vertical)
+	{
+		rect->left = rect->right;
+		rect->right = temp.left;
+	}
+	else
+	{
+		rect->bottom = rect->top;
+		rect->top = temp.bottom;
+	}
+}
+
+void swapLines(DoublePoint* l1start, DoublePoint* l1end, DoublePoint* l2start, DoublePoint* l2end)
+{
+	swapPoints(l1start, l2start);
+	swapPoints(l1end, l2end);
+}
+
+BOOL doesLineIntersectRect(DoublePoint start, DoublePoint end, RECT rect, POINT* intersection)
+{
+	/*
+	1-----2
+	|	  |
+	|	  |
+	4-----3
+	*/
+
+	DoublePoint l1start = { rect.left, rect.bottom }; //1->2
+	DoublePoint l1end = { rect.right, rect.bottom };
+
+	DoublePoint l2start = { rect.right, rect.bottom }; //2->3
+	DoublePoint l2end = { rect.right, rect.top };
+
+	DoublePoint l3start = { rect.right, rect.top };//3->4
+	DoublePoint l3end = { rect.left, rect.top };
+
+	DoublePoint l4start = { rect.left, rect.top };//4->1
+	DoublePoint l4end = { rect.left, rect.bottom };
+
+	if (start.x <= rect.left)
+	{
+		swapLines(&l2start, &l2end, &l4end, &l4start);
+	}
+
+	if (start.y <= rect.top)
+	{
+		swapLines(&l1start, &l1end, &l3end, &l3start);
+	}
+
+	if (doLinesIntersect(start, end, l1start, l1end, intersection)) //top OR bottom
+		return TRUE;
+	if (doLinesIntersect(start, end, l2start, l2end, intersection)) //right OR left
+		return TRUE;
 
 	return FALSE;
 }
