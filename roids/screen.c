@@ -2,8 +2,6 @@
 
 WindowDetails* details;
 
-Spaceship ship = { 0.0 };
-
 void Screen_HandleWindowEvents()
 {
 	MSG msg;
@@ -31,29 +29,23 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, WPARAM lParam)
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
+		case 'Z':
+			Ship_Fire();
+			break;
 		case VK_LEFT:
-			for (int i = 0; i < 3; i++)
-				Vector_Rotate(&(ship.vector[i]), -(M_PI / 20));
+			Ship_Rotate(LEFT);
 			break;
 		case VK_RIGHT:
-			for (int i = 0; i < 3; i++)
-				Vector_Rotate(&(ship.vector[i]), (M_PI / 20));
+			Ship_Rotate(RIGHT);
 			break;
 		case 'W':
-			ship.velocity.i = ship.vector[0].i / 20;
-			ship.velocity.j = ship.vector[0].j / 20;
-			break;
-		case 'A':
+			Ship_Accelerate(FORWARD);
 			break;
 		case 'S':
-			ship.velocity.i = -ship.vector[0].i / 20;
-			ship.velocity.j = -ship.vector[0].j / 20;
-			break;
-		case 'D':
+			Ship_Accelerate(BACKWARD);
 			break;
 		case 'Q':
-			ship.velocity.i = 0.0;
-			ship.velocity.j = 0.0;
+			Ship_Accelerate(STOP);
 			break;
 		}
 		break;
@@ -136,6 +128,7 @@ BOOL Screen_Init(HINSTANCE hInstance, int width, int height, wchar_t* className,
 
 void Screen_Render()
 {
+	Ship_WriteToBuffer();
 	StretchDIBits(details->DC,
 		0, 0, details->Width, details->Height,
 		0, 0, details->BitMapInfo.bmiHeader.biWidth, Abs(details->BitMapInfo.bmiHeader.biHeight),

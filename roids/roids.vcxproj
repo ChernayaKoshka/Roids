@@ -119,18 +119,19 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="math_custom.c" />
     <ClCompile Include="screen.c" />
+    <ClCompile Include="ship.c" />
     <ClCompile Include="timer.c" />
     <ClCompile Include="vector.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\%27roids\%27roids\asteroid.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\drawing.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\globals.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\math_custom.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\screen.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\ship.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\timer.h" />
-    <ClInclude Include="..\..\%27roids\%27roids\vector.h" />
+    <ClInclude Include="asteroid.h" />
+    <ClInclude Include="drawing.h" />
+    <ClInclude Include="globals.h" />
+    <ClInclude Include="math_custom.h" />
+    <ClInclude Include="screen.h" />
+    <ClInclude Include="ship.h" />
+    <ClInclude Include="timer.h" />
+    <ClInclude Include="vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

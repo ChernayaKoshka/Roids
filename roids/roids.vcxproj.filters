@@ -36,30 +36,33 @@
     <ClCompile Include="drawing.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ship.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\%27roids\%27roids\drawing.h">
+    <ClInclude Include="ship.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\globals.h">
+    <ClInclude Include="timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\math_custom.h">
+    <ClInclude Include="vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\vector.h">
+    <ClInclude Include="screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\timer.h">
+    <ClInclude Include="math_custom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\screen.h">
+    <ClInclude Include="globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\asteroid.h">
+    <ClInclude Include="drawing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\%27roids\%27roids\ship.h">
+    <ClInclude Include="asteroid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
