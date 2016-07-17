@@ -6,6 +6,7 @@
 
 #include "math_custom.h"
 #include "ship.h"
+#include "asteroid.h"
 
 typedef struct tagWindowDetails
 {

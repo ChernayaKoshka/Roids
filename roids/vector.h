@@ -23,3 +23,5 @@ Vector Vector_Subtract(Vector v1, Vector v2);
 POINT Vector_GetTerminalPoint(Vector v1, POINT offsetFromOrigin);
 void Vector_Rotate(Vector* v, double deltaAngle);
 void Vector_Move(Vector* v, double relativeX, double relativeY);
+void Vector_Invert(Vector* v);
+BOOL Vector_RectContainsPoint(DoublePoint rect[4], DoublePoint point);

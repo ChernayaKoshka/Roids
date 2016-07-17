@@ -129,6 +129,8 @@ BOOL Screen_Init(HINSTANCE hInstance, int width, int height, wchar_t* className,
 void Screen_Render()
 {
 	Ship_WriteToBuffer();
+	Asteroid_WriteToBuffer();
+
 	StretchDIBits(details->DC,
 		0, 0, details->Width, details->Height,
 		0, 0, details->BitMapInfo.bmiHeader.biWidth, Abs(details->BitMapInfo.bmiHeader.biHeight),

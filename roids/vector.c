@@ -68,3 +68,35 @@ void Vector_Move(Vector* v, double relativeX, double relativeY)
 	v->i += relativeX;
 	v->j += relativeY;
 }
+
+void Vector_Invert(Vector* v)
+{
+	v->i = -v->i;
+	v->j = -v->j;
+}
+
+Vector Vector_GetFromPoints(DoublePoint p1, DoublePoint p2)
+{
+	Vector toReturn = { 0 };
+	toReturn.i = p2.x - p1.x;
+	toReturn.j = p2.y - p1.y;
+	return toReturn;
+}
+
+BOOL Vector_RectContainsPoint(DoublePoint rect[4], DoublePoint point)
+{
+	Vector AM = Vector_GetFromPoints(rect[0], point);
+	Vector AB = Vector_GetFromPoints(rect[0], rect[1]);
+	Vector BC = Vector_GetFromPoints(rect[1], rect[2]);
+	Vector BM = Vector_GetFromPoints(rect[1], point);
+
+	int dotAMAB = Vector_DotProduct(AM, AB);
+	int dotABAB = Vector_DotProduct(AB, AB);
+	int dotBCBM = Vector_DotProduct(BC, BM);
+	int dotBCBC = Vector_DotProduct(BC, BC);
+
+	if (((0 <= dotAMAB) && (dotAMAB <= dotABAB)) && ((0 <= dotBCBM) && (dotBCBM <= dotBCBC)))
+		return TRUE;
+	else
+		return FALSE;
+}

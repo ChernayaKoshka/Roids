@@ -3,6 +3,8 @@
 
 extern WindowDetails* details;
 
+extern Asteroid roids[5];
+
 Spaceship ship = { 0.0 };
 
 BOOL Ship_Init()
@@ -20,6 +22,13 @@ BOOL Ship_Init()
 	ship.origin.y = WINDOW_HEIGHT / 2;
 
 	return TRUE;
+}
+
+void Ship_Die()
+{
+	Ship_ResetVelocity();
+	ship.origin.x = WINDOW_WIDTH / 2;
+	ship.origin.y = WINDOW_HEIGHT / 2;
 }
 
 void Ship_ResetVelocity()
@@ -78,14 +87,41 @@ void Ship_Update()
 {
 	for (int i = 0; i < 3; i++)
 	{
+		DoublePoint point = { ship.origin.x + ship.vector[i].i, ship.origin.y + ship.vector[i].j };
+		for (int j = 0; j < 5; j++)
+		{
+			RECT adjustedRect = Asteroid_AdjustRectForOrigin(roids[j]);
+
+			DoublePoint* points = calloc(4, sizeof(DoublePoint));
+
+			points[0].x = adjustedRect.left;
+			points[0].y = adjustedRect.top;
+
+			points[1].x = adjustedRect.right;
+			points[1].y = adjustedRect.top;
+
+			points[2].x = adjustedRect.left;
+			points[2].y = adjustedRect.bottom;
+
+			points[3].x = adjustedRect.right;
+			points[3].y = adjustedRect.bottom;
+			if (Vector_RectContainsPoint(points, point))
+			{
+				Ship_Die();
+				free(points);
+				return;
+			}
+			free(points);
+		}
+
 		if (ship.origin.x + ship.vector[i].i + ship.velocity.i < 0 || ship.origin.x + ship.vector[i].i + ship.velocity.i > WINDOW_WIDTH - 1)
 		{
-			Ship_ResetVelocity();
+			Vector_Invert(&ship.velocity);
 			return;
 		}
 		if (ship.origin.y + ship.vector[i].j + ship.velocity.j < 0 || ship.origin.y + ship.vector[i].j + ship.velocity.j > WINDOW_HEIGHT - 1)
 		{
-			Ship_ResetVelocity();
+			Vector_Invert(&ship.velocity);
 			return;
 		}
 	}

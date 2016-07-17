@@ -8,6 +8,7 @@
 #include "globals.h"
 #include "ship.h"
 #include "drawing.h"
+#include "asteroid.h"
 
 #if DEBUG_OUTPUT
 wchar_t* dbgBuffer[513];
@@ -22,11 +23,16 @@ BOOL running = TRUE;
 void update()
 {
 	Ship_Update();
+
+	Asteroid_Update();
 }
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	/*INIT*/
+
+	srand(time(NULL));
+
 	if (!Time_Init())
 	{
 		MessageBoxW(NULL, L"Get a newer operating system.", L"What is this, the stone age?", MB_OK);
@@ -35,7 +41,13 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	if (!Ship_Init())
 	{
-		MessageBox(NULL, "Honestly, I have no idea how this could have failed.", "???", MB_OK);
+		MessageBox(NULL, L"Honestly, I have no idea how this could have failed.", L"Ship_Init", MB_OK);
+		return -1;
+	}
+
+	if (!Asteroid_Init())
+	{
+		MessageBox(NULL, L"Honestly, I have no idea how this could have failed.", L"Asteroid_Init", MB_OK);
 		return -1;
 	}
 

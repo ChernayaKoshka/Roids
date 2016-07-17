@@ -36,7 +36,7 @@ params: (1) int min - The minimum size of the floating point number
 
 returns: An integer representing the number of tries allowed to the user
 */
-double getRandomFloatInRange(double min, double max)
+double getRandomDoubleInRange(double min, double max)
 {
 	return (((double)rand() / RAND_MAX)*(max - min)) + min;
 }
@@ -69,9 +69,9 @@ void specialPlot(int* screen, int screenWidth, int x, int y, int size, int color
 	}
 }
 
-POINT* convertRectToPoints(RECT rect)
+DoublePoint* convertRectToPoints(RECT rect)
 {
-	POINT* points = malloc(4 * sizeof(POINT));
+	DoublePoint* points = malloc(4 * sizeof(DoublePoint));
 
 	int height = Difference(rect.top, rect.bottom);
 	int width = Difference(rect.left, rect.right);
@@ -168,4 +168,44 @@ int roundDownTo(int numToRound, int multiple)
 		return -(abs(numToRound) + remainder);
 	else
 		return numToRound - remainder;
+}
+
+//credit to http://stackoverflow.com/a/18292964/2396111
+BOOL lineIntersectsRect(DoublePoint start, DoublePoint end, RECT rect)
+{
+	double minX = Least(rect.left, rect.right);
+	double minY = Least(rect.top, rect.bottom);
+
+	double maxX = Greatest(rect.left, rect.right);
+	double maxY = Greatest(rect.top, rect.bottom);
+
+	//if ((start.x <= minX && end.x <= minX) || (start.y <= minY && end.y <= minY) || (start.x >= maxX && end.x >= maxX) || (start.y >= maxY && end.y >= maxY))
+	if ((start.x <= minX && end.x <= minX) || (start.y <= minY && end.y <= minY) || (start.x >= maxX && end.x >= maxX) || (start.y >= maxY && end.y >= maxY))
+		return FALSE;
+
+	double m = (end.y - start.y) / (end.x - start.x);
+
+	double y = m * (minX - start.x) + start.y; //y = mx+b
+	if (y > minY && y < maxY) return TRUE;
+
+	y = m*(maxX - start.x) + start.y;
+	if (y > minY && y < maxY) return TRUE;
+
+	double x = (minY - start.y) / m + start.x;
+	if (x > minX && x < maxX) return TRUE;
+
+	x = (maxY - start.y) / m + start.x;
+	if (x > minX && x < maxX) return TRUE;
+
+	return FALSE;
+}
+
+BOOL doRectanglesOverlap(RECT r1, RECT r2)
+{
+	if (r1.left < r2.right)
+		if (r1.right > r2.left)
+			if (r1.top < r2.bottom)
+				if (r1.bottom > r2.top)
+					return TRUE;
+	return FALSE;
 }
