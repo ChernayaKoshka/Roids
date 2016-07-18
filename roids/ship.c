@@ -90,7 +90,7 @@ void Ship_CheckCollisions()
 		DoublePoint point = { ship.origin.x + ship.vector[i].i, ship.origin.y + ship.vector[i].j };
 		for (int j = 0; j < nodeCount; j++)
 		{
-			Asteroid* roid = SLL_GetNodeAt(i)->data;
+			Asteroid* roid = SLL_GetNodeAt(j)->data;
 			if (roid == NULL)
 				continue; //TODO: Add error message
 			RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
