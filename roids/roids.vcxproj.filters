@@ -39,6 +39,9 @@
     <ClCompile Include="ship.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="singly_linked_list.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ship.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="asteroid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="singly_linked_list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

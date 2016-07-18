@@ -2,22 +2,51 @@
 
 extern WindowDetails* details;
 
-Asteroid roids[5] = { 0 };
+extern SLL_Node* root;
+extern int nodeCount;
+
+Asteroid* Asteroid_CreateRandomAsteroid(int id)
+{
+	Asteroid* asteroid = calloc(1, sizeof(Asteroid));
+	asteroid->id = id;
+
+	asteroid->asteroid.right = ASTEROID_WIDTH * 2;
+	asteroid->asteroid.bottom = ASTEROID_HEIGHT * 2;
+
+	asteroid->origin.x = getRandomDoubleInRange(ASTEROID_WIDTH, WINDOW_WIDTH - 20);
+	asteroid->origin.y = getRandomDoubleInRange(ASTEROID_HEIGHT, WINDOW_HEIGHT - 20);
+	asteroid->velocity.i = getRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
+	asteroid->velocity.j = getRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
+	return asteroid;
+}
+
+BOOL Asteroid_CreateNewAsteroid()
+{
+	Asteroid* tail = SLL_GetNodeAt(nodeCount - 1)->data;
+	if (tail == NULL) return FALSE;
+
+	Asteroid* newAsteroid = Asteroid_CreateRandomAsteroid(++tail->id);
+	if (newAsteroid == NULL) return FALSE;
+
+	SLL_Node* newAsteroidNode = calloc(1, sizeof(SLL_Node));
+	if (newAsteroidNode == NULL) return FALSE;
+	newAsteroidNode->data = newAsteroid;
+
+	SLL_AddNode(newAsteroidNode);
+	return TRUE;
+}
 
 BOOL Asteroid_Init()
 {
-	for (int i = 0; i < 5; i++)
+	Asteroid* parentAsteroid = Asteroid_CreateRandomAsteroid(0);
+	root->data = parentAsteroid;
+
+	for (int i = 1; i < 5; i++)
 	{
-		roids[i].id = i;
-
-		roids[i].asteroid.right = ASTEROID_WIDTH * 2;
-		roids[i].asteroid.bottom = ASTEROID_HEIGHT * 2;
-
-		roids[i].origin.x = getRandomDoubleInRange(ASTEROID_WIDTH, WINDOW_WIDTH - 20);
-		roids[i].origin.y = getRandomDoubleInRange(ASTEROID_HEIGHT, WINDOW_HEIGHT - 20);
-
-		roids[i].velocity.i = getRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
-		roids[i].velocity.j = getRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
+		Asteroid* asteroid = Asteroid_CreateRandomAsteroid(i);
+		SLL_Node* asteroidNode = calloc(1, sizeof(SLL_Node));
+		asteroidNode->data = asteroid;
+		SLL_AddNode(asteroidNode);
 	}
 
 	return TRUE;
@@ -44,36 +73,42 @@ RECT Asteroid_AdjustRectForOrigin(Asteroid asteroid)
 
 void Asteroid_Update()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < nodeCount; i++)
 	{
-		RECT adjustedRect = Asteroid_AdjustRectForOrigin(roids[i]);
+		Asteroid* roid = SLL_GetNodeAt(i)->data;
+		if (roid == NULL)
+			continue; //TODO: Error message
+		RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
 
-		if (adjustedRect.right + roids[i].velocity.i > WINDOW_WIDTH - 1 || adjustedRect.left + roids[i].velocity.i < 0)
+		if (adjustedRect.right + roid->velocity.i > WINDOW_WIDTH - 1 || adjustedRect.left + roid->velocity.i < 0)
 		{
-			Vector_Invert(&roids[i].velocity);
-			roids[i].velocity.i += getRandomDoubleInRange(-0.5, 0.5);
-			roids[i].velocity.j += getRandomDoubleInRange(-0.5, 0.5);
+			Vector_Invert(&roid->velocity);
+			roid->velocity.i += getRandomDoubleInRange(-0.5, 0.5);
+			roid->velocity.j += getRandomDoubleInRange(-0.5, 0.5);
 			return;
 		}
 
-		if (adjustedRect.bottom + roids[i].velocity.j > WINDOW_HEIGHT - 1 || adjustedRect.top + roids[i].velocity.j < 0)
+		if (adjustedRect.bottom + roid->velocity.j > WINDOW_HEIGHT - 1 || adjustedRect.top + roid->velocity.j < 0)
 		{
-			Vector_Invert(&roids[i].velocity);
-			roids[i].velocity.i += getRandomDoubleInRange(-0.5, 0.5);
-			roids[i].velocity.j += getRandomDoubleInRange(-0.5, 0.5);
+			Vector_Invert(&roid->velocity);
+			roid->velocity.i += getRandomDoubleInRange(-0.5, 0.5);
+			roid->velocity.j += getRandomDoubleInRange(-0.5, 0.5);
 			return;
 		}
 
-		roids[i].origin.x += roids[i].velocity.i;
-		roids[i].origin.y += roids[i].velocity.j;
+		roid->origin.x += roid->velocity.i;
+		roid->origin.y += roid->velocity.j;
 	}
 }
 
 void Asteroid_WriteToBuffer()
 {
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < nodeCount; i++)
 	{
-		RECT posRect = Asteroid_AdjustRectForOrigin(roids[i]);
+		Asteroid* roid = SLL_GetNodeAt(i)->data;
+		if (roid == NULL)
+			continue; //TODO: Error message
+		RECT posRect = Asteroid_AdjustRectForOrigin(*roid);
 
 		/*
 		1--------2

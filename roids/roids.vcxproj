@@ -115,6 +115,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="asteroid.c" />
+    <ClCompile Include="singly_linked_list.c" />
     <ClCompile Include="drawing.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="math_custom.c" />
@@ -125,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="asteroid.h" />
+    <ClInclude Include="singly_linked_list.h" />
     <ClInclude Include="drawing.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="math_custom.h" />

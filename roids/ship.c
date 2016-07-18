@@ -3,8 +3,6 @@
 
 extern WindowDetails* details;
 
-extern Asteroid roids[5];
-
 Spaceship ship = { 0.0 };
 
 POINT intersection = { 0 };
@@ -90,9 +88,12 @@ void Ship_CheckCollisions()
 	for (int i = 0; i < 3; i++)
 	{
 		DoublePoint point = { ship.origin.x + ship.vector[i].i, ship.origin.y + ship.vector[i].j };
-		for (int j = 0; j < 5; j++)
+		for (int j = 0; j < nodeCount; j++)
 		{
-			RECT adjustedRect = Asteroid_AdjustRectForOrigin(roids[j]);
+			Asteroid* roid = SLL_GetNodeAt(i)->data;
+			if (roid == NULL)
+				continue; //TODO: Add error message
+			RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
 
 			DoublePoint* points = calloc(4, sizeof(DoublePoint));
 
@@ -162,13 +163,16 @@ void Ship_Fire()
 	DoublePoint start = { ship.origin.x + ship.vector[0].i , ship.origin.y + ship.vector[0].j };
 	DoublePoint end = { ship.origin.x + ship.vector[0].i * SHOT_SCALAR, ship.origin.y + ship.vector[0].j * SHOT_SCALAR };
 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < nodeCount; i++)
 	{
-		RECT adjustedRect = Asteroid_AdjustRectForOrigin(roids[i]);
+		Asteroid* roid = (Asteroid*)SLL_GetNodeAt(i)->data;
+		if (roid == NULL)
+			continue; //TODO: Add error message
+		RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
 		if (doesLineIntersectRect(start, end, adjustedRect, &intersection))
 		{
-			roids[i].velocity.i = 0.0;
-			roids[i].velocity.j = 0.0;
+			roid->velocity.i = 0.0;
+			roid->velocity.j = 0.0;
 
 			DrawLine(
 				ship.origin.x + ship.vector[0].i,
@@ -176,6 +180,7 @@ void Ship_Fire()
 				intersection.x,
 				intersection.y,
 				0x00FFFFFF, details->BackBuffer, details->Width, details->Height);
+			Asteroid_CreateNewAsteroid();
 			return;
 		}
 	}

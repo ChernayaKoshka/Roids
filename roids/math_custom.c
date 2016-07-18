@@ -255,14 +255,10 @@ BOOL doesLineIntersectRect(DoublePoint start, DoublePoint end, RECT rect, POINT*
 	DoublePoint l4end = { rect.left, rect.bottom };
 
 	if (start.x <= rect.left)
-	{
 		swapLines(&l2start, &l2end, &l4end, &l4start);
-	}
 
 	if (start.y <= rect.top)
-	{
 		swapLines(&l1start, &l1end, &l3end, &l3start);
-	}
 
 	if (doLinesIntersect(start, end, l1start, l1end, intersection)) //top OR bottom
 		return TRUE;

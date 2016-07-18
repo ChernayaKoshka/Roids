@@ -9,6 +9,7 @@
 #include "ship.h"
 #include "drawing.h"
 #include "asteroid.h"
+#include "singly_linked_list.h"
 
 #if DEBUG_OUTPUT
 wchar_t* dbgBuffer[513];
@@ -43,6 +44,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	{
 		MessageBox(NULL, L"Honestly, I have no idea how this could have failed.", L"Ship_Init", MB_OK);
 		return -1;
+	}
+
+	if (!SLL_Init())
+	{
+		return -1; //no memory, no point in error message
 	}
 
 	if (!Asteroid_Init())
