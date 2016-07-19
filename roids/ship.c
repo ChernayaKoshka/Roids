@@ -42,10 +42,10 @@ BOOL Ship_Rotate(eRotationDirection direction)
 	Vector tempVectors[3] = { ship.vector[0], ship.vector[1],ship.vector[2] };
 	if (direction == LEFT)
 		for (int i = 0; i < 3; i++)
-			Vector_Rotate(&(tempVectors[i]), -(M_PI / 20));
+			Vector_Rotate(&(tempVectors[i]), -(M_PI / 10));
 	else if (direction == RIGHT)
 		for (int i = 0; i < 3; i++)
-			Vector_Rotate(&(tempVectors[i]), (M_PI / 20));
+			Vector_Rotate(&(tempVectors[i]), (M_PI / 10));
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -156,10 +156,6 @@ void Ship_WriteToBuffer()
 
 void Ship_Fire()
 {
-	ship.shooting = TRUE;
-
-	ship.shooting = FALSE;
-
 	DoublePoint start = { ship.origin.x + ship.vector[0].i , ship.origin.y + ship.vector[0].j };
 	DoublePoint end = { ship.origin.x + ship.vector[0].i * SHOT_SCALAR, ship.origin.y + ship.vector[0].j * SHOT_SCALAR };
 
@@ -180,7 +176,7 @@ void Ship_Fire()
 				intersection.x,
 				intersection.y,
 				0x00FFFFFF, details->BackBuffer, details->Width, details->Height);
-			Asteroid_CreateNewAsteroid();
+			Asteroid_Destroy(i);
 			return;
 		}
 	}
