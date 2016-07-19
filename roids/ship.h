@@ -13,12 +13,10 @@ typedef struct tagSpaceship
 	Vector vector[3];
 	DoublePoint origin;
 	Vector velocity;
-	BOOL shooting;
+	int score;
 }Spaceship;
 
 extern Spaceship ship;
-
-extern POINT intersection;
 
 typedef enum tagRotationDirection
 {
@@ -33,7 +31,7 @@ typedef enum tagMovementDirection
 	STOP
 }eMovementDirectionn;
 
-BOOL Ship_Init();
+void Ship_Init();
 void Ship_ResetVelocity();
 BOOL Ship_Rotate(eRotationDirection direction);
 BOOL Ship_Accelerate(eMovementDirectionn direction);

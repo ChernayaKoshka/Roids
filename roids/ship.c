@@ -5,9 +5,7 @@ extern WindowDetails* details;
 
 Spaceship ship = { 0.0 };
 
-POINT intersection = { 0 };
-
-BOOL Ship_Init()
+void Ship_Init()
 {
 	ship.vector[0].i = 0;
 	ship.vector[0].j = DEFAULT_J*SCALAR;
@@ -21,7 +19,7 @@ BOOL Ship_Init()
 	ship.origin.x = WINDOW_WIDTH / 2;
 	ship.origin.y = WINDOW_HEIGHT / 2;
 
-	return TRUE;
+	return;
 }
 
 void Ship_Die()
@@ -29,6 +27,7 @@ void Ship_Die()
 	Ship_ResetVelocity();
 	ship.origin.x = WINDOW_WIDTH / 2;
 	ship.origin.y = WINDOW_HEIGHT / 2;
+	ship.score = 0;
 }
 
 void Ship_ResetVelocity()
@@ -42,10 +41,10 @@ BOOL Ship_Rotate(eRotationDirection direction)
 	Vector tempVectors[3] = { ship.vector[0], ship.vector[1],ship.vector[2] };
 	if (direction == LEFT)
 		for (int i = 0; i < 3; i++)
-			Vector_Rotate(&(tempVectors[i]), -(M_PI / 10));
+			Vector_Rotate(&tempVectors[i], -(M_PI / 10));
 	else if (direction == RIGHT)
 		for (int i = 0; i < 3; i++)
-			Vector_Rotate(&(tempVectors[i]), (M_PI / 10));
+			Vector_Rotate(&tempVectors[i], (M_PI / 10));
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -67,7 +66,7 @@ BOOL Ship_Accelerate(eMovementDirectionn direction)
 {
 	if (direction == FORWARD)
 	{
-		ship.velocity.i = ship.vector[0].i / 20;
+		ship.velocity.i = ship.vector[0].i / 20; //divided by 20 just to scale it so it's not freaky fast
 		ship.velocity.j = ship.vector[0].j / 20;
 	}
 	else if (direction == BACKWARD)
@@ -90,7 +89,7 @@ void Ship_CheckCollisions()
 		DoublePoint point = { ship.origin.x + ship.vector[i].i, ship.origin.y + ship.vector[i].j };
 		for (int j = 0; j < nodeCount; j++)
 		{
-			Asteroid* roid = SLL_GetNodeAt(j)->data;
+			Asteroid* roid = DLL_GetNodeAt(j)->data;
 			if (roid == NULL)
 				continue; //TODO: Add error message
 			RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
@@ -109,7 +108,8 @@ void Ship_CheckCollisions()
 			points[3].x = adjustedRect.left;
 			points[3].y = adjustedRect.bottom;
 
-			if (Vector_RectContainsPoint(points, point) || Vector_RectContainsPoint(points, ship.origin))
+			if (Vector_RectContainsPoint(points, point) ||
+				Vector_RectContainsPoint(points, ship.origin))
 			{
 				Ship_Die();
 				free(points);
@@ -143,15 +143,15 @@ void Ship_Update()
 void Ship_WriteToBuffer()
 {
 	for (int i = 0; i < 3; i++)
-		DrawLine(ship.origin.x, ship.origin.y, ship.origin.x + ship.vector[i].i, ship.origin.y + ship.vector[i].j, 0x00FF00FF / (i + 1), details->BackBuffer, details->Width, details->Height);
+		DrawLine((int)(ship.origin.x), (int)(ship.origin.y), (int)(ship.origin.x + ship.vector[i].i), (int)(ship.origin.y + ship.vector[i].j), 0x00FF00FF / (i + 1), details->BackBuffer, details->Width, details->Height);
 
 	Vector v1 = { ship.origin.x + ship.vector[0].i, ship.origin.y + ship.vector[0].j };
 	Vector v2 = { ship.origin.x + ship.vector[1].i, ship.origin.y + ship.vector[1].j };
 	Vector v3 = { ship.origin.x + ship.vector[2].i, ship.origin.y + ship.vector[2].j };
 
-	DrawLine(v1.i, v1.j, v2.i, v2.j, 0x00FF0000, details->BackBuffer, details->Width, details->Height);
-	DrawLine(v2.i, v2.j, v3.i, v3.j, 0x0000FF00, details->BackBuffer, details->Width, details->Height);
-	DrawLine(v3.i, v3.j, v1.i, v1.j, 0x000000FF, details->BackBuffer, details->Width, details->Height);
+	DrawLine((int)v1.i, (int)v1.j, (int)v2.i, (int)v2.j, 0x00FF0000, details->BackBuffer, details->Width, details->Height);
+	DrawLine((int)v2.i, (int)v2.j, (int)v3.i, (int)v3.j, 0x0000FF00, details->BackBuffer, details->Width, details->Height);
+	DrawLine((int)v3.i, (int)v3.j, (int)v1.i, (int)v1.j, 0x000000FF, details->BackBuffer, details->Width, details->Height);
 }
 
 void Ship_Fire()
@@ -159,20 +159,27 @@ void Ship_Fire()
 	DoublePoint start = { ship.origin.x + ship.vector[0].i , ship.origin.y + ship.vector[0].j };
 	DoublePoint end = { ship.origin.x + ship.vector[0].i * SHOT_SCALAR, ship.origin.y + ship.vector[0].j * SHOT_SCALAR };
 
+	POINT intersection;
 	for (int i = 0; i < nodeCount; i++)
 	{
-		Asteroid* roid = (Asteroid*)SLL_GetNodeAt(i)->data;
+		Asteroid* roid = (Asteroid*)DLL_GetNodeAt(i)->data;
 		if (roid == NULL)
-			continue; //TODO: Add error message
-		RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
-		if (doesLineIntersectRect(start, end, adjustedRect, &intersection))
 		{
-			roid->velocity.i = 0.0;
-			roid->velocity.j = 0.0;
+			MessageBox(NULL, L"A null asteroid was found!", L"Oops!", MB_OK);
+			running = FALSE;
+			return;
+		}
+		RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
+		if (MC_DoesLineIntersectRect(start, end, adjustedRect, &intersection))
+		{
+			if (roid->type == LARGE)
+				ship.score += 5;
+			else
+				ship.score++;
 
 			DrawLine(
-				ship.origin.x + ship.vector[0].i,
-				ship.origin.y + ship.vector[0].j,
+				(int)(ship.origin.x + ship.vector[0].i),
+				(int)(ship.origin.y + ship.vector[0].j),
 				intersection.x,
 				intersection.y,
 				0x00FFFFFF, details->BackBuffer, details->Width, details->Height);
@@ -181,9 +188,9 @@ void Ship_Fire()
 		}
 	}
 	DrawLine(
-		ship.origin.x + ship.vector[0].i,
-		ship.origin.y + ship.vector[0].j,
-		ship.origin.x + ship.vector[0].i * 4,
-		ship.origin.y + ship.vector[0].j * 4,
+		(int)(ship.origin.x + ship.vector[0].i),
+		(int)(ship.origin.y + ship.vector[0].j),
+		(int)(ship.origin.x + ship.vector[0].i * 4),
+		(int)(ship.origin.y + ship.vector[0].j * 4),
 		0x00FFFFFF, details->BackBuffer, details->Width, details->Height);
 }

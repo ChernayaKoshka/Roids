@@ -12,24 +12,12 @@ typedef struct tagSlope
 	int dy;
 }Slope;
 
-int Greatest(int num, int num2);
-int Least(int num, int num2);
-int Difference(int num, int num2);
-int Abs(int val);
-double getRandomDoubleInRange(double min, double max);
-int GetColor(double* angle);
-int GetRandRGB();
-void specialPlot(int* screen, int screenWidth, int x, int y, int size, int color);
-
-Slope getSlope(POINT p1, POINT p2);
-double getDistance(POINT p1, POINT p2);
-
-DoublePoint* convertRectToPoints(RECT rect);
-
-int roundTo(int numToRound, int multiple);
-int roundUpTo(int numToRound, int multiple);
-int roundDownTo(int numToRound, int multiple);
-
-BOOL doLinesIntersect(DoublePoint start, DoublePoint end, DoublePoint start2, DoublePoint end2, POINT* intersection);
-BOOL doesLineIntersectRect(DoublePoint start, DoublePoint end, RECT rect, POINT* intersection);
-BOOL doRectanglesOverlap(RECT r1, RECT r2);
+int MC_Greatest(int num, int num2);
+int MC_Least(int num, int num2);
+int MC_Difference(int num, int num2);
+int MC_Abs(int val);
+double MC_GetRandomDoubleInRange(double min, double max);
+int MC_GetRandomIntInRange(int min, int max);
+DoublePoint* MC_ConvertRectToPoints(RECT rect);
+BOOL MC_DoLinesIntersect(DoublePoint start, DoublePoint end, DoublePoint start2, DoublePoint end2, POINT* intersection);
+BOOL MC_DoesLineIntersectRect(DoublePoint start, DoublePoint end, RECT rect, POINT* intersection);

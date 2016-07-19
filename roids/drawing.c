@@ -35,15 +35,15 @@ void DrawLine(int x, int y, int x2, int y2, int color, int* buffer, int bufferWi
 	//same as before...
 	if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
 	//get |width|
-	int longest = Abs(w);
+	int longest = MC_Abs(w);
 	//get |shortest|
-	int shortest = Abs(h);
+	int shortest = MC_Abs(h);
 	//another octant check, is our width less than (or equal to) our height?
 	if (!(longest > shortest))
 	{
 		//swap width/height
-		longest = Abs(h);
-		shortest = Abs(w);
+		longest = MC_Abs(h);
+		shortest = MC_Abs(w);
 		//another octant check! Is our height negative? Set deltay accordingly
 		if (h < 0) dy2 = -1; else if (h > 0) dy2 = 1;
 		//no change in x2
@@ -74,65 +74,6 @@ void DrawLine(int x, int y, int x2, int y2, int color, int* buffer, int bufferWi
 			x += dx2;
 			//ditto but with y
 			y += dy2;
-		}
-	}
-}
-
-void DrawRect(int x, int y, int width, int height, int color, int* buffer, int bufferWidth, int bufferHeight)
-{
-	for (int i = 0; i < height; i++)
-	{
-		DrawLine(x, (y + i), width, (y + i), color, buffer, bufferWidth, bufferHeight);
-	}
-}
-
-void DrawTriangle(TRIANGLE tri, int color, int* buffer, int bufferWidth, int bufferHeight)
-{
-	/*
-		1
-	  /   \
-	 /	   \
-	/	    \
-	2-------3
-
-	1 = tri.top
-	2 = tri.left
-	3 = tri.right
-	*/
-
-	//2->1
-	DrawLine(tri.left.x, tri.left.y, tri.top.x, tri.top.y, color, buffer, bufferWidth, bufferHeight);
-	//2->3
-	DrawLine(tri.left.x, tri.left.y, tri.right.x, tri.right.y, color, buffer, bufferWidth, bufferHeight);
-	//3->1
-	DrawLine(tri.right.x, tri.right.y, tri.top.x, tri.top.y, color, buffer, bufferWidth, bufferHeight);
-}
-
-void DrawCircle(int x, int y, int radius, int color, int* buffer, int bufferWidth, int bufferHeight)
-{
-	int x1 = radius;
-	int y1 = 0;
-	int decisionOver2 = 1 - x1;
-
-	while (y1 <= x1)
-	{
-		Plot(x1 + x, y1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 1
-		Plot(y1 + x, x1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 2
-		Plot(-x1 + x, y1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 4
-		Plot(-y1 + x, x1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 3
-		Plot(-x1 + x, -y1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 5
-		Plot(-y1 + x, -x1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 6
-		Plot(x1 + x, -y1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 7
-		Plot(y1 + x, -x1 + y, color, buffer, bufferWidth, bufferHeight); // Octant 8
-		y1++;
-		if (decisionOver2 <= 0)
-		{
-			decisionOver2 += 2 * y1 + 1;
-		}
-		else
-		{
-			x1--;
-			decisionOver2 += 2 * (y1 - x1) + 1;
 		}
 	}
 }

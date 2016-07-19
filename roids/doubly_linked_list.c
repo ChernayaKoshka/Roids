@@ -1,21 +1,21 @@
-#include "singly_linked_list.h"
+#include "doubly_linked_list.h"
 #include <assert.h>
 
-SLL_Node* root;
+DLL_Node* root;
 int nodeCount = 1;
 
-BOOL SLL_Init()
+BOOL DLL_Init()
 {
-	root = calloc(1, sizeof(SLL_Node));
+	root = calloc(1, sizeof(DLL_Node));
 	if (root == NULL)
 		return FALSE;
 	return TRUE;
 }
 
-int SLL_ForceNodeCountUpdate()
+int DLL_ForceNodeCountUpdate()
 {
 	int nodeCount = 0;
-	SLL_Node* node = root;
+	DLL_Node* node = root;
 	do
 	{
 		nodeCount++;
@@ -24,10 +24,10 @@ int SLL_ForceNodeCountUpdate()
 	return nodeCount;
 }
 
-SLL_Node* SLL_GetNodeAt(int index)
+DLL_Node* DLL_GetNodeAt(int index)
 {
 	int tnodeCount = 0;
-	SLL_Node* node = root;
+	DLL_Node* node = root;
 	while (node != NULL)
 	{
 		if (tnodeCount == index)
@@ -38,9 +38,9 @@ SLL_Node* SLL_GetNodeAt(int index)
 	return NULL;
 }
 
-BOOL SLL_AddNode(SLL_Node* node)
+BOOL DLL_AddNode(DLL_Node* node)
 {
-	SLL_Node* temp = root;
+	DLL_Node* temp = root;
 	while (temp->next != NULL)
 		temp = temp->next;
 	temp->next = node;
@@ -49,12 +49,12 @@ BOOL SLL_AddNode(SLL_Node* node)
 	return TRUE;
 }
 
-BOOL SLL_RemoveNodeAt(int index)
+BOOL DLL_RemoveNodeAt(int index)
 {
 	nodeCount--;
-	SLL_Node* toRemove = root;
-	SLL_Node* tempNodeNext;
-	SLL_Node* tempNodePrev;
+	DLL_Node* toRemove = root;
+	DLL_Node* tempNodeNext;
+	DLL_Node* tempNodePrev;
 
 	for (int i = 0; i < index; i++)
 		toRemove = toRemove->next;

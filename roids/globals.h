@@ -1,11 +1,17 @@
 #pragma once
 
+#include <Windows.h>
+
 #define DEBUG_OUTPUT 0
 
-#define STEPS_PER_SECOND 1.0f/60.0f
+#define STEPS_PER_SECOND (1.0f/60.0f)
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 640
 
 #define WINDOW_TITLE L"'ROIDS"
 #define WINDOW_CLASS L"roids"
+
+#define ASTEROID_SPAWNRATE 12/STEPS_PER_SECOND
+
+extern BOOL running;

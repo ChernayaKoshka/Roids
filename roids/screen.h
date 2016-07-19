@@ -1,12 +1,11 @@
 #pragma once
 #include <Windows.h>
-#include "math_custom.h"
-#include "vector.h"
 #include <assert.h>
-
+#include <stdio.h>
 #include "math_custom.h"
 #include "ship.h"
 #include "asteroid.h"
+#include "vector.h"
 
 typedef struct tagWindowDetails
 {

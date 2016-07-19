@@ -14,8 +14,8 @@ typedef struct tagDoublePoint
 	double y;
 }DoublePoint;
 
-float Vector_DotProduct(Vector p1, Vector p2);
-float Vector_GetMagnitude(Vector vector);
+double Vector_DotProduct(Vector p1, Vector p2);
+double Vector_GetMagnitude(Vector vector);
 Vector Vector_Project(Vector vector, Vector onto);
 Vector Vector_Add(Vector v1, Vector v2);
 Vector Vector_AddRaw(Vector v1, float i, float j);

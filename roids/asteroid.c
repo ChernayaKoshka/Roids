@@ -2,30 +2,30 @@
 
 extern WindowDetails* details;
 
-extern SLL_Node* root;
+extern DLL_Node* root;
 extern int nodeCount;
 
-Asteroid* Asteroid_CreateRandomAsteroid(int id)
+Asteroid* Asteroid_CreateRandomAsteroid()
 {
 	Asteroid* asteroid = calloc(1, sizeof(Asteroid));
-	asteroid->id = id;
 
 	asteroid->asteroid.right = ASTEROID_WIDTH * 2;
 	asteroid->asteroid.bottom = ASTEROID_HEIGHT * 2;
 
-	asteroid->origin.x = getRandomDoubleInRange(ASTEROID_WIDTH, WINDOW_WIDTH - 20);
-	asteroid->origin.y = getRandomDoubleInRange(ASTEROID_HEIGHT, WINDOW_HEIGHT - 20);
-	asteroid->velocity.i = getRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
-	asteroid->velocity.j = getRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
+	asteroid->origin.x = MC_GetRandomDoubleInRange(ASTEROID_WIDTH, WINDOW_WIDTH - 20);
+	asteroid->origin.y = MC_GetRandomDoubleInRange(ASTEROID_HEIGHT, WINDOW_HEIGHT - 20);
+
+	asteroid->velocity.i = MC_GetRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
+	asteroid->velocity.j = MC_GetRandomDoubleInRange(ASTEROID_MIN_START_VELOCITY, ASTEROID_MAX_START_VELOCITY);
 	return asteroid;
 }
 
 BOOL Asteroid_CreateNewAsteroid(AsteroidType type, POINT pos)
 {
-	Asteroid* tail = SLL_GetNodeAt(nodeCount - 1)->data;
+	Asteroid* tail = DLL_GetNodeAt(nodeCount - 1)->data;
 	if (tail == NULL) return FALSE;
 
-	Asteroid* newAsteroid = Asteroid_CreateRandomAsteroid(++tail->id);
+	Asteroid* newAsteroid = Asteroid_CreateRandomAsteroid();
 	if (newAsteroid == NULL) return FALSE;
 
 	newAsteroid->type = type;
@@ -34,6 +34,7 @@ BOOL Asteroid_CreateNewAsteroid(AsteroidType type, POINT pos)
 	{
 	case LARGE:
 		//do nothing, already taken care off in createrandomasteroid
+		//this is here in case future developments do something with it
 		break;
 	case SMALL:
 		newAsteroid->asteroid.right /= 2;
@@ -47,17 +48,17 @@ BOOL Asteroid_CreateNewAsteroid(AsteroidType type, POINT pos)
 		newAsteroid->origin.y = pos.y;
 	}
 
-	SLL_Node* newAsteroidNode = calloc(1, sizeof(SLL_Node));
+	DLL_Node* newAsteroidNode = calloc(1, sizeof(DLL_Node));
 	if (newAsteroidNode == NULL) return FALSE;
 	newAsteroidNode->data = newAsteroid;
 
-	SLL_AddNode(newAsteroidNode);
+	DLL_AddNode(newAsteroidNode);
 	return TRUE;
 }
 
 void Asteroid_Destroy(int place)
 {
-	Asteroid* roid = SLL_GetNodeAt(place)->data;
+	Asteroid* roid = DLL_GetNodeAt(place)->data;
 	if (roid->type == LARGE)
 	{
 		for (int i = 0; i < 4; i++)
@@ -67,20 +68,25 @@ void Asteroid_Destroy(int place)
 		}
 	}
 
-	SLL_RemoveNodeAt(place);
+	DLL_RemoveNodeAt(place);
 }
 
 BOOL Asteroid_Init()
 {
 	Asteroid* parentAsteroid = Asteroid_CreateRandomAsteroid(0);
+	if (parentAsteroid == NULL) return FALSE;
 	root->data = parentAsteroid;
 
 	for (int i = 1; i < 5; i++)
 	{
 		Asteroid* asteroid = Asteroid_CreateRandomAsteroid(i);
-		SLL_Node* asteroidNode = calloc(1, sizeof(SLL_Node));
+		if (asteroid == NULL) return FALSE;
+
+		DLL_Node* asteroidNode = calloc(1, sizeof(DLL_Node));
+		if (asteroidNode == NULL) return FALSE;
+
 		asteroidNode->data = asteroid;
-		SLL_AddNode(asteroidNode);
+		DLL_AddNode(asteroidNode);
 	}
 
 	return TRUE;
@@ -90,11 +96,11 @@ RECT Asteroid_AdjustRectForOrigin(Asteroid asteroid)
 {
 	RECT rect = { 0 };
 
-	int right = asteroid.asteroid.right / 2 + asteroid.origin.x;
-	int left = -asteroid.asteroid.right / 2 + asteroid.origin.x;
+	int right = asteroid.asteroid.right / 2 + (int)asteroid.origin.x;
+	int left = -asteroid.asteroid.right / 2 + (int)asteroid.origin.x;
 
-	int top = asteroid.asteroid.bottom / 2 + asteroid.origin.y;
-	int bottom = -asteroid.asteroid.bottom / 2 + asteroid.origin.y;
+	int top = asteroid.asteroid.bottom / 2 + (int)asteroid.origin.y;
+	int bottom = -asteroid.asteroid.bottom / 2 + (int)asteroid.origin.y;
 
 	rect.right = right;
 	rect.left = left;
@@ -107,26 +113,51 @@ RECT Asteroid_AdjustRectForOrigin(Asteroid asteroid)
 
 void Asteroid_Update()
 {
+	static int hitCount = 0; //kind of like a local global
+	if (hitCount == (int)ASTEROID_SPAWNRATE)
+	{
+		hitCount = 0;
+		POINT spawnPoint = { 0 };
+		int rightSide = rand() % 2;
+
+		if (rightSide)
+			spawnPoint.x = WINDOW_WIDTH - ASTEROID_WIDTH - 1; //don't spawn outside of bounds.
+		else
+			spawnPoint.x = ASTEROID_WIDTH + 1;
+
+		spawnPoint.y = MC_GetRandomIntInRange(ASTEROID_HEIGHT + 1, WINDOW_HEIGHT - ASTEROID_HEIGHT - 1);
+
+		Asteroid_CreateNewAsteroid(LARGE, spawnPoint);
+	}
+	hitCount++;
+
+	if (nodeCount == 0)
+		running = FALSE;
+
 	for (int i = 0; i < nodeCount; i++)
 	{
-		Asteroid* roid = SLL_GetNodeAt(i)->data;
+		Asteroid* roid = DLL_GetNodeAt(i)->data;
 		if (roid == NULL)
-			continue; //TODO: Error message
+		{
+			MessageBox(NULL, L"A null asteroid was found!", L"Oops!", MB_OK);
+			running = FALSE;
+			return;
+		}
 		RECT adjustedRect = Asteroid_AdjustRectForOrigin(*roid);
 
 		if (adjustedRect.right + roid->velocity.i > WINDOW_WIDTH - 1 || adjustedRect.left + roid->velocity.i < 0)
 		{
 			Vector_Invert(&roid->velocity);
-			roid->velocity.i += getRandomDoubleInRange(-0.5, 0.5);
-			roid->velocity.j += getRandomDoubleInRange(-0.5, 0.5);
+			roid->velocity.i += MC_GetRandomDoubleInRange(-0.5, 0.5);
+			roid->velocity.j += MC_GetRandomDoubleInRange(-0.5, 0.5);
 			return;
 		}
 
 		if (adjustedRect.bottom + roid->velocity.j > WINDOW_HEIGHT - 1 || adjustedRect.top + roid->velocity.j < 0)
 		{
 			Vector_Invert(&roid->velocity);
-			roid->velocity.i += getRandomDoubleInRange(-0.5, 0.5);
-			roid->velocity.j += getRandomDoubleInRange(-0.5, 0.5);
+			roid->velocity.i += MC_GetRandomDoubleInRange(-0.5, 0.5);
+			roid->velocity.j += MC_GetRandomDoubleInRange(-0.5, 0.5);
 			return;
 		}
 
@@ -139,9 +170,13 @@ void Asteroid_WriteToBuffer()
 {
 	for (int i = 0; i < nodeCount; i++)
 	{
-		Asteroid* roid = SLL_GetNodeAt(i)->data;
+		Asteroid* roid = DLL_GetNodeAt(i)->data;
 		if (roid == NULL)
-			continue; //TODO: Error message
+		{
+			MessageBox(NULL, L"A null asteroid was found!", L"Oops!", MB_OK);
+			running = FALSE;
+			return;
+		}
 		RECT posRect = Asteroid_AdjustRectForOrigin(*roid);
 
 		/*

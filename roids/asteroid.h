@@ -3,7 +3,7 @@
 #include "vector.h"
 #include "drawing.h"
 #include "screen.h"
-#include "singly_linked_list.h"
+#include "doubly_linked_list.h"
 
 #define ASTEROID_WIDTH 20
 #define ASTEROID_HEIGHT 20
@@ -19,7 +19,6 @@ typedef enum tagAsteroidType
 
 typedef struct tagAsteroid
 {
-	char id;
 	AsteroidType type;
 	RECT asteroid;
 	DoublePoint origin;

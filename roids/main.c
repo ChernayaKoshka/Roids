@@ -9,7 +9,7 @@
 #include "ship.h"
 #include "drawing.h"
 #include "asteroid.h"
-#include "singly_linked_list.h"
+#include "doubly_linked_list.h"
 
 #if DEBUG_OUTPUT
 wchar_t* dbgBuffer[513];
@@ -19,20 +19,16 @@ extern WindowDetails* details;
 
 extern Spaceship ship;
 
-BOOL running = TRUE;
-
 void update()
 {
 	Ship_Update();
-
 	Asteroid_Update();
 }
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	/*INIT*/
-
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 
 	if (!Time_Init())
 	{
@@ -40,22 +36,13 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		return -1;
 	}
 
-	if (!Ship_Init())
-	{
-		MessageBox(NULL, L"Honestly, I have no idea how this could have failed.", L"Ship_Init", MB_OK);
-		return -1;
-	}
+	Ship_Init();
 
-	if (!SLL_Init())
-	{
+	if (!DLL_Init()) //Doubly Linked List, not Dynamic Link Library :)
 		return -1; //no memory, no point in error message
-	}
 
 	if (!Asteroid_Init())
-	{
-		MessageBox(NULL, L"Honestly, I have no idea how this could have failed.", L"Asteroid_Init", MB_OK);
-		return -1;
-	}
+		return -1; //no memory, no point in error message
 
 	if (!Screen_Init(hInstance, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_CLASS, WINDOW_TITLE, nShowCmd)) //gotta make sure that player/level are initialized before creating window
 	{
@@ -82,6 +69,10 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			timeAccumulated -= STEPS_PER_SECOND;
 		}
 
+		wchar_t buf[256];
+		swprintf_s(buf, 256, L"Score: %d", ship.score);
+		TextOut(details->DC, 0, 0, buf, lstrlen(buf));
+
 #if DEBUG_OUTPUT
 		for (int i = 0; i < 3; i++)
 		{
@@ -96,6 +87,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		TextOutW(details->DC, 0, 4 * 20, dbgBuffer, lstrlenW(dbgBuffer));
 #endif
 	}
+
+	if (nodeCount == 0) // no asteroids left
+		MessageBox(NULL, L"YOU WON!", L"Congrats", MB_OK);
 
 	return EXIT_SUCCESS;
 }

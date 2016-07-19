@@ -2,7 +2,7 @@
 
 WindowDetails* details;
 
-extern POINT intersection;
+extern BOOL running;
 
 void Screen_HandleWindowEvents()
 {
@@ -16,8 +16,6 @@ void Screen_HandleWindowEvents()
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, WPARAM lParam)
 {
-	POINT newPos = { 0 };
-
 	LRESULT Result = 0;
 	switch (uMsg)
 	{
@@ -26,36 +24,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, WPARAM lParam)
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
-		abort();
+		running = FALSE;
 		break;
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case 'Z':
+		case 'Z': case VK_NUMPAD1:
 			Ship_Fire();
 			break;
-		case VK_LEFT:
+		case 'A': case VK_LEFT:
 			Ship_Rotate(LEFT);
 			break;
-		case VK_RIGHT:
+		case 'D': case VK_RIGHT:
 			Ship_Rotate(RIGHT);
 			break;
-		case 'W':
+		case 'W': case VK_UP:
 			Ship_Accelerate(FORWARD);
 			break;
-		case 'S':
+		case 'S': case VK_DOWN:
 			Ship_Accelerate(BACKWARD);
 			break;
-		case 'Q':
+		case 'Q': case VK_NUMPAD0:
 			Ship_Accelerate(STOP);
 			break;
 		}
 		break;
-	case WM_KEYUP:
-		switch (wParam)
-		{
-		}
-
 	default:
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
@@ -105,8 +98,8 @@ WindowDetails* Screen_DefineWindow(HINSTANCE hInstance, int width, int height, w
 		WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_VISIBLE,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		Difference(adjustedRect.left, adjustedRect.right),
-		Difference(adjustedRect.bottom, adjustedRect.top),
+		MC_Difference(adjustedRect.left, adjustedRect.right),
+		MC_Difference(adjustedRect.bottom, adjustedRect.top),
 		NULL,
 		NULL,
 		0,
@@ -135,7 +128,7 @@ void Screen_Render()
 
 	StretchDIBits(details->DC,
 		0, 0, details->Width, details->Height,
-		0, 0, details->BitMapInfo.bmiHeader.biWidth, Abs(details->BitMapInfo.bmiHeader.biHeight),
+		0, 0, details->BitMapInfo.bmiHeader.biWidth, MC_Abs(details->BitMapInfo.bmiHeader.biHeight),
 		details->BackBuffer, &details->BitMapInfo,
 		DIB_RGB_COLORS, SRCCOPY);
 	ZeroMemory(details->BackBuffer, details->Width*details->Height * sizeof(int));

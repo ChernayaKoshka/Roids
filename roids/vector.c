@@ -1,13 +1,13 @@
 #include "vector.h"
 
-float Vector_DotProduct(Vector p1, Vector p2)
+double Vector_DotProduct(Vector p1, Vector p2)
 {
 	return ((p1.i*p2.i) + (p1.j*p2.j));
 }
 
-float Vector_GetMagnitude(Vector vector)
+double Vector_GetMagnitude(Vector vector)
 {
-	return (float)sqrt(vector.i*vector.i + vector.j*vector.j);
+	return sqrt(vector.i*vector.i + vector.j*vector.j);
 }
 
 Vector Vector_Project(Vector vector, Vector onto)
@@ -90,10 +90,10 @@ BOOL Vector_RectContainsPoint(DoublePoint rect[4], DoublePoint point)
 	Vector BC = Vector_GetFromPoints(rect[1], rect[2]);
 	Vector BM = Vector_GetFromPoints(rect[1], point);
 
-	int dotAMAB = Vector_DotProduct(AM, AB);
-	int dotABAB = Vector_DotProduct(AB, AB);
-	int dotBCBM = Vector_DotProduct(BC, BM);
-	int dotBCBC = Vector_DotProduct(BC, BC);
+	double dotAMAB = Vector_DotProduct(AM, AB);
+	double dotABAB = Vector_DotProduct(AB, AB);
+	double dotBCBM = Vector_DotProduct(BC, BM);
+	double dotBCBC = Vector_DotProduct(BC, BC);
 
 	if (((0 <= dotAMAB) && (dotAMAB <= dotABAB)) && ((0 <= dotBCBM) && (dotBCBM <= dotBCBC)))
 		return TRUE;
