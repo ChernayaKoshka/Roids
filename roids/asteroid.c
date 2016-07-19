@@ -114,7 +114,9 @@ RECT Asteroid_AdjustRectForOrigin(Asteroid asteroid)
 void Asteroid_Update()
 {
 	static int hitCount = 0; //kind of like a local global
-	if (hitCount == (int)ASTEROID_SPAWNRATE)
+	int rate = (int)ASTEROID_SPAWNRATE; //for some reason I need to define it as a local variable before use... I don't quite understand
+										//why, since in the debug window it's the exact same value as if it was just placed directly in the 'if' statement
+	if (hitCount == rate)
 	{
 		hitCount = 0;
 		POINT spawnPoint = { 0 };
