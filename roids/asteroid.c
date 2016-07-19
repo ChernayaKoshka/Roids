@@ -20,7 +20,7 @@ Asteroid* Asteroid_CreateRandomAsteroid(int id)
 	return asteroid;
 }
 
-BOOL Asteroid_CreateNewAsteroid()
+BOOL Asteroid_CreateNewAsteroid(AsteroidType type, POINT pos)
 {
 	Asteroid* tail = SLL_GetNodeAt(nodeCount - 1)->data;
 	if (tail == NULL) return FALSE;
@@ -28,12 +28,46 @@ BOOL Asteroid_CreateNewAsteroid()
 	Asteroid* newAsteroid = Asteroid_CreateRandomAsteroid(++tail->id);
 	if (newAsteroid == NULL) return FALSE;
 
+	newAsteroid->type = type;
+
+	switch (type)
+	{
+	case LARGE:
+		//do nothing, already taken care off in createrandomasteroid
+		break;
+	case SMALL:
+		newAsteroid->asteroid.right /= 2;
+		newAsteroid->asteroid.bottom /= 2;
+		break;
+	}
+
+	if (pos.x >= 0 && pos.y >= 0)
+	{
+		newAsteroid->origin.x = pos.x;
+		newAsteroid->origin.y = pos.y;
+	}
+
 	SLL_Node* newAsteroidNode = calloc(1, sizeof(SLL_Node));
 	if (newAsteroidNode == NULL) return FALSE;
 	newAsteroidNode->data = newAsteroid;
 
 	SLL_AddNode(newAsteroidNode);
 	return TRUE;
+}
+
+void Asteroid_Destroy(int place)
+{
+	Asteroid* roid = SLL_GetNodeAt(place)->data;
+	if (roid->type == LARGE)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			POINT intPos = { (int)roid->origin.x, (int)roid->origin.y };
+			Asteroid_CreateNewAsteroid(SMALL, intPos);
+		}
+	}
+
+	SLL_RemoveNodeAt(place);
 }
 
 BOOL Asteroid_Init()

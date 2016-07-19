@@ -11,15 +11,23 @@
 #define ASTEROID_MAX_START_VELOCITY 2.0
 #define ASTEROID_MIN_START_VELOCITY 0.0
 
+typedef enum tagAsteroidType
+{
+	LARGE,
+	SMALL
+}AsteroidType;
+
 typedef struct tagAsteroid
 {
 	char id;
+	AsteroidType type;
 	RECT asteroid;
 	DoublePoint origin;
 	Vector velocity;
 }Asteroid;
 
-BOOL Asteroid_CreateNewAsteroid();
+BOOL Asteroid_CreateNewAsteroid(AsteroidType type, POINT pos);
+void Asteroid_Destroy(int place);
 BOOL Asteroid_Init();
 RECT Asteroid_AdjustRectForOrigin(Asteroid asteroid);
 void Asteroid_Update();
