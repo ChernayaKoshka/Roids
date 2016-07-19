@@ -4,6 +4,7 @@
 typedef struct tagSLLNode
 {
 	void* data;
+	struct SLL_Node* prev;
 	struct SLL_Node* next;
 }SLL_Node;
 

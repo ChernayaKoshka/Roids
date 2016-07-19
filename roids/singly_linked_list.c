@@ -1,4 +1,5 @@
 #include "singly_linked_list.h"
+#include <assert.h>
 
 SLL_Node* root;
 int nodeCount = 1;
@@ -25,15 +26,15 @@ int SLL_ForceNodeCountUpdate()
 
 SLL_Node* SLL_GetNodeAt(int index)
 {
-	int nodeCount = 0;
+	int tnodeCount = 0;
 	SLL_Node* node = root;
-	do
+	while (node != NULL)
 	{
-		if (nodeCount == index)
+		if (tnodeCount == index)
 			return node;
 		node = node->next;
-		nodeCount++;
-	} while (node != NULL);
+		tnodeCount++;
+	}
 	return NULL;
 }
 
@@ -43,20 +44,35 @@ BOOL SLL_AddNode(SLL_Node* node)
 	while (temp->next != NULL)
 		temp = temp->next;
 	temp->next = node;
+	node->prev = temp;
 	nodeCount++;
 	return TRUE;
 }
 
 BOOL SLL_RemoveNodeAt(int index)
 {
-	int nodeCount = 0;
-	SLL_Node* node = root;
+	nodeCount--;
+	SLL_Node* toRemove = root;
+	SLL_Node* tempNodeNext;
+	SLL_Node* tempNodePrev;
+
 	for (int i = 0; i < index; i++)
-	{
-		node = node->next;
-		if (!node) return FALSE;
-	}
-	free(node->next);
-	node->next = NULL;
+		toRemove = toRemove->next;
+
+	tempNodeNext = toRemove->next;
+	tempNodePrev = toRemove->prev;
+
+	if (index == 0)
+		root = tempNodeNext;
+
+	free(toRemove->data);
+	free(toRemove);
+
+	if (tempNodeNext != NULL)
+		tempNodeNext->prev = tempNodePrev;
+
+	if (tempNodePrev != NULL)
+		tempNodePrev->next = tempNodeNext;
+
 	return TRUE;
 }
