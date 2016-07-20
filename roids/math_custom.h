@@ -6,12 +6,6 @@
 
 #define M_PI 3.141592653589793238462643383279502884197169399375105820974
 
-typedef struct tagSlope
-{
-	int dx;
-	int dy;
-}Slope;
-
 int MC_Greatest(int num, int num2);
 int MC_Least(int num, int num2);
 int MC_Difference(int num, int num2);

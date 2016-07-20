@@ -33,10 +33,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, WPARAM lParam)
 			Ship_Fire();
 			break;
 		case 'A': case VK_LEFT:
-			Ship_Rotate(LEFT);
+			Ship_Rotate(ROTATE_LEFT);
 			break;
 		case 'D': case VK_RIGHT:
-			Ship_Rotate(RIGHT);
+			Ship_Rotate(ROTATE_RIGHT);
 			break;
 		case 'W': case VK_UP:
 			Ship_Accelerate(FORWARD);
